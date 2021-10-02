@@ -1,0 +1,26 @@
+{
+  "name": "buildmyreact",
+  "version": "1.0.0",
+  "description": "My attempt at building React",
+  "main": "index.html",
+  "dependencies": {},
+  "devDependencies": {
+    "@babel/cli": "^7.15.7",
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.6",
+    "@babel/preset-react": "^7.14.5"
+  },
+  "scripts": {
+    "build": "babel src -d lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xiangmingchen/buildMyReact.git"
+  },
+  "author": "Jenny Chen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Xiangmingchen/buildMyReact/issues"
+  },
+  "homepage": "https://github.com/Xiangmingchen/buildMyReact#readme"
+}
