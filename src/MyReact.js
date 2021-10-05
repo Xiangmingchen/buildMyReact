@@ -1,11 +1,18 @@
 /**
- * An JS (React) object representing a Node in DOM
- */
+  * An JS (React) object representing a Node in DOM, as well as ...
+  * a node in Fiber tree data structure
+
+  */
 class Element {
+ /*
+  * @param {string} type: A HTML tagname, or "TEXT_ELEMENT" for text nodes
+  * @param {Object} props: React properties
+  * @param {Array<Element>} children: children React Elements
+  */
   constructor(type, props, children) {
     this.type = type;
     this.props = props;
-    this.children = children
+    this.children = children;
   }
   /**
    * Create a DOM node based on this React Element
@@ -16,7 +23,8 @@ class Element {
     // Create the DOM node based on type
     switch (this.type) {
       case "TEXT_ELEMENT":
-        domNode = document.createTextNode("") // replace ""
+        domNode = document.createTextNode("")
+        // nodeValue will be set later as a prop to overwrite the empty string
         break;
       default:
         domNode = document.createElement(this.type)
