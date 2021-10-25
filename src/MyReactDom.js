@@ -18,10 +18,15 @@ function workLoop(deadline) {
     shouldYeild = deadline.timeRemaining() < 1
   }
 
+  if (nextUnitOfWork == null && wipRoot != null) {
+    commitRoot();
+  }
+
   requestIdleCallback(workLoop)
 }
 
-let nextUnitOfWork = null;
+let nextUnitOfWork = null; // "next unit of render"
+let wipRoot = null; // "work in progress" root. Rendered, but not yet commited
 
 /**
  * Start the rendering process by initializing fiber root
@@ -30,16 +35,16 @@ let nextUnitOfWork = null;
  */
 function render(element, container) {
   const sentinelRootElement = new Element("ROOT", {}, [element]);
-  nextUnitOfWork = new FiberNode(sentinelRootElement, null, container);
+  wipRoot = new FiberNode(sentinelRootElement, null, container);
+  nextUnitOfWork = wipRoot;
 }
 
 function performUnitOfWork(currFiber) {
-  // Construct DOM node for the current element
+  // Render phase: Construct DOM node for the current element
   // Skip root fiber node, whose domNode is the overall container, also no parent
   if (!currFiber.isRoot()) {
     currFiber.domNode = currFiber.element.createDomNode(); // Unit of work
-    // Insert the DOM node we just created to its parent's DOM node
-    currFiber.parent.domNode.appendChild(currFiber.domNode);
+    // Leave the insertion of DOM node to Commit phase
   }
 
   let prevChild = null
@@ -72,6 +77,26 @@ function performUnitOfWork(currFiber) {
   }
   // Otherwise we have a sibling to work on next
   return fiberToCheck.sibling;
+}
+
+// Call recursive helper to commit the rendered DOM nodes to DOM
+function commitRoot() {
+  commitNode(wipRoot.firstChild);
+  wipRoot = null;
+}
+
+/**
+ * Recursively insert all children and sibling into parent's DOM node
+ * @param  {FiberNode} fiberNode
+ */
+function commitNode(fiberNode) {
+  if (!fiberNode) {
+    return
+  }
+  // Insert the DOM node we rendered before to its parent's DOM node
+  fiberNode.parent.domNode.appendChild(fiberNode.domNode);
+  commitNode(fiberNode.firstChild);
+  commitNode(fiberNode.sibling);
 }
 
 /*
